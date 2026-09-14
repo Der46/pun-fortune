@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#F3E9D6">
+<meta name="description" content="掃碼即玩的線上籤筒，搖一搖抽一張諧音梗吊牌籤。">
+<title>每日諧音籤・笑看人生</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   01. 設計變數（★ 想換配色改這裡就好）
+   ========================================================= */
+:root{
+  --paper:        #F3E9D6;   /* 宣紙米白 */
+  --paper-deep:   #E5D6B8;   /* 紙面陰影 */
+  --ink:          #221C19;   /* 墨黑 */
+  --ink-soft:     #5E5149;   /* 淡墨（內文） */
+  --red:          #C0342A;   /* 硃砂紅 */
+  --red-deep:     #8C1F18;   /* 廟門暗紅 */
+  --gold:         #A8823E;   /* 銅金 */
+  --gold-light:   #DFC384;   /* 金屬反光 */
+  --shake-time:   1.2s;      /* 籤筒晃動時間 */
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+[hidden]{ display:none !important; }
+
+body{
+  margin:0;
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  color:var(--ink);
+  background:radial-gradient(125% 85% at 50% 0%, #FCF6E9 0%, var(--paper) 48%, var(--paper-deep) 100%);
+  overflow:hidden;               /* 手機版不出現捲軸 */
+  touch-action:manipulation;     /* 關掉雙擊縮放 */
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* 紙張織紋 */
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    repeating-linear-gradient(45deg,  rgba(122,92,52,.05) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(-45deg, rgba(122,92,52,.035) 0 1px, transparent 1px 7px);
+  mix-blend-mode:multiply;
+}
+
+/* =========================================================
+   02. 版面骨架：一頁一畫面，絕不外溢
+   ========================================================= */
+.stage{
+  position:relative; z-index:1;
+  height:100vh; height:100dvh;
+  width:100%; max-width:520px; margin:0 auto;
+}
+.view{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center;
+  padding:
+    calc(env(safe-area-inset-top) + 26px) 22px
+    calc(env(safe-area-inset-bottom) + 22px);
+}
+
+/* =========================================================
+   03. 首頁：標題與籤筒
+   ========================================================= */
+.masthead{ text-align:center; flex:0 0 auto; position:relative; }
+.masthead__title{
+  margin:0;
+  font-family:"Noto Serif TC",serif; font-weight:700;
+  font-size:clamp(27px,7.6vw,34px);
+  letter-spacing:.26em; text-indent:.26em;
+  color:var(--ink);
+}
+.masthead__sub{
+  margin:12px 0 0;
+  font-size:13.5px; letter-spacing:.08em; color:var(--ink-soft);
+}
+.seal{
+  position:absolute; top:-14px; right:-2px;
+  width:42px; height:42px; display:grid; place-items:center;
+  transform:rotate(-7deg);
+  background:linear-gradient(160deg,var(--red),var(--red-deep));
+  border-radius:5px;
+  box-shadow:0 3px 8px rgba(140,31,24,.32);
+  color:#FBEFD8; font-family:"Noto Serif TC",serif; font-weight:700;
+  font-size:21px; line-height:1;
+}
+
+.barrel-stage{
+  flex:1 1 auto; min-height:0; width:100%;
+  position:relative; display:grid; place-items:center;
+}
+.barrel-wrap{ transform-origin:50% 92%; will-change:transform; }
+.barrel{ display:block; width:auto; max-width:64vw; max-height:100%; height:340px; }
+@media (max-height:680px){ .barrel{ height:280px; } }
+
+/* 晃動籤筒 */
+@keyframes barrel-shake{
+  0%   { transform:rotate(0deg)   translateX(0); }
+  9%   { transform:rotate(-11deg) translateX(-9px); }
+  21%  { transform:rotate(10deg)  translateX(9px); }
+  33%  { transform:rotate(-9deg)  translateX(-8px); }
+  45%  { transform:rotate(8deg)   translateX(7px); }
+  57%  { transform:rotate(-6deg)  translateX(-5px); }
+  69%  { transform:rotate(5deg)   translateX(4px); }
+  81%  { transform:rotate(-3deg)  translateX(-2px); }
+  92%  { transform:rotate(1.5deg) translateX(1px); }
+  100% { transform:rotate(0deg)   translateX(0); }
+}
+.is-shaking{ animation:barrel-shake var(--shake-time) cubic-bezier(.36,.07,.19,.97) both; }
+
+/* 竹籤跳出筒外 */
+.stick-fly{
+  position:absolute; left:50%; top:14%;
+  width:13px; height:150px; margin-left:-6.5px;
+  border-radius:7px; opacity:0; pointer-events:none;
+  background:linear-gradient(90deg,#C6AC74,#F4E7C4 38%,#E4D2A4 72%,#C09E68);
+  box-shadow:0 3px 8px rgba(70,45,20,.3);
+}
+.stick-fly::after{
+  content:""; position:absolute; left:0; right:0; top:0; height:20px;
+  border-radius:7px 7px 3px 3px;
+  background:linear-gradient(180deg,var(--red),var(--red-deep));
+}
+@keyframes stick-pop{
+  0%  { opacity:0; transform:translateY(54px)  rotate(4deg); }
+  18% { opacity:1; }
+  62% { opacity:1; transform:translateY(-70px) rotate(-10deg); }
+  100%{ opacity:0; transform:translateY(-34px) rotate(-16deg); }
+}
+.is-drawing .stick-fly{ animation:stick-pop .74s .6s ease-out both; }
+
+/* =========================================================
+   04. 按鈕與操作區
+   ========================================================= */
+.actions{ flex:0 0 auto; width:100%; display:flex; flex-direction:column; align-items:center; gap:14px; }
+
+.btn{
+  font-family:inherit; font-size:17px; font-weight:700;
+  letter-spacing:.2em; text-indent:.2em;
+  border-radius:999px; border:1px solid transparent;
+  padding:16px 42px; cursor:pointer;
+  transition:transform .12s ease, box-shadow .2s ease, opacity .2s ease;
+}
+.btn:active{ transform:scale(.97); }
+.btn:focus-visible{ outline:3px solid var(--gold); outline-offset:3px; }
+.btn:disabled{ opacity:.55; cursor:default; transform:none; }
+
+.btn--draw{
+  color:#FCF3DF; border-color:var(--gold-light);
+  background:linear-gradient(180deg,#CE4032 0%,var(--red) 45%,var(--red-deep) 100%);
+  box-shadow:0 12px 24px -10px rgba(140,31,24,.7), inset 0 1px 0 rgba(255,255,255,.28);
+  min-width:224px;
+}
+.btn--again{
+  color:#FCF3DF; border-color:var(--gold-light);
+  background:linear-gradient(180deg,#CE4032 0%,var(--red) 45%,var(--red-deep) 100%);
+  box-shadow:0 10px 20px -10px rgba(140,31,24,.65);
+  font-size:15px; padding:13px 26px; letter-spacing:.14em; text-indent:.14em; min-width:0;
+}
+.btn--copy{
+  color:var(--ink); background:transparent; border-color:rgba(168,130,62,.7);
+  font-size:15px; font-weight:500; padding:13px 26px;
+  letter-spacing:.14em; text-indent:.14em;
+}
+
+.linkish{
+  background:none; border:0; padding:6px 4px; cursor:pointer;
+  font-family:inherit; font-size:13px; color:var(--ink-soft);
+  border-bottom:1px dashed rgba(94,81,73,.5);
+}
+.linkish:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+.hint{ margin:0; font-size:12.5px; color:var(--ink-soft); min-height:1.2em; text-align:center; }
+
+/* =========================================================
+   05. 籤牌吊飾（★ 質感核心：木牌 + 孔眼 + 吊繩）
+   ========================================================= */
+.result-scroll{
+  flex:1 1 auto; min-height:0; width:100%;
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:10px 0 18px;
+}
+.charm{
+  position:relative; width:100%; max-width:330px; margin:0 auto;
+  padding-top:56px;
+  transform-origin:50% 6px;
+}
+.charm__cord{
+  position:absolute; top:0; left:50%; margin-left:-60px;
+  width:120px; height:92px; z-index:3; pointer-events:none;
+}
+
+.tag{
+  position:relative; padding:46px 24px 24px;
+  border-radius:26px; border:1px solid rgba(150,116,58,.55);
+  background:
+    repeating-linear-gradient(96deg, rgba(158,118,58,.055) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg,#FCF5E6 0%,#F3E7CF 56%,#EADCBE 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -4px 12px rgba(120,86,40,.13),
+    0 24px 36px -20px rgba(60,38,18,.6),
+    0 3px 8px rgba(60,38,18,.13);
+}
+.tag::after{
+  content:""; position:absolute; inset:9px;
+  border:1px solid rgba(168,130,62,.42); border-radius:18px; pointer-events:none;
+}
+.tag__eyelet{
+  position:absolute; top:15px; left:50%; transform:translateX(-50%);
+  width:27px; height:27px; border-radius:50%;
+  border:5px solid #B5912F;
+  background:radial-gradient(circle at 50% 32%, #4A3B2C, #7A6851);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,.55),
+    0 1px 0 rgba(255,255,255,.8),
+    0 2px 4px rgba(60,38,18,.25);
+}
+
+.tag__meta{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.tag__no{
+  font-family:"Noto Serif TC",serif; font-size:13.5px;
+  letter-spacing:.16em; color:var(--ink-soft);
+}
+.tag__grade{
+  font-size:13px; font-weight:500; letter-spacing:.12em; text-indent:.12em;
+  color:#FBEFD8; padding:5px 14px; border-radius:999px;
+  border:1px solid var(--gold-light);
+  background:linear-gradient(180deg,var(--red),var(--red-deep));
+  box-shadow:0 3px 7px rgba(140,31,24,.28);
+  white-space:nowrap;
+}
+
+.tag__keyword{
+  margin:22px 0 0; text-align:center;
+  font-family:"Noto Serif TC",serif; font-weight:700;
+  font-size:clamp(30px,9.2vw,39px); line-height:1.25;
+  letter-spacing:.12em; text-indent:.12em; color:var(--ink);
+}
+.tag__rule{
+  width:62px; height:5px; margin:16px auto 18px;
+  border-top:2px solid rgba(168,130,62,.75);
+  border-bottom:1px solid rgba(168,130,62,.4);
+}
+.tag__pun{
+  margin:0; font-size:15px; line-height:2; color:var(--ink-soft);
+  text-align:justify; text-justify:inter-ideograph;
+}
+
+.tag__advice{
+  margin-top:22px; padding-top:16px;
+  border-top:1px solid rgba(168,130,62,.32);
+  display:grid; grid-template-columns:1fr 1fr;
+}
+.advice__cell{ padding:0 10px; text-align:center; }
+.advice__cell + .advice__cell{ border-left:1px solid rgba(168,130,62,.32); }
+.advice__label{
+  display:block; font-family:"Noto Serif TC",serif; font-size:17px; font-weight:700;
+  margin-bottom:5px;
+}
+.advice__cell--do    .advice__label{ color:var(--red); }
+.advice__cell--avoid .advice__label{ color:var(--ink); }
+.advice__value{ font-size:13.5px; color:var(--ink-soft); line-height:1.6; }
+
+/* 吊牌垂降 + 阻尼擺盪 */
+@keyframes charm-drop{
+  0%  { opacity:0; transform:translateY(-52px) rotate(-12deg); }
+  40% { opacity:1; transform:translateY(0)     rotate(7.5deg); }
+  58% { transform:rotate(-5deg); }
+  73% { transform:rotate(3deg); }
+  86% { transform:rotate(-1.4deg); }
+  100%{ transform:rotate(0deg); }
+}
+.charm--in{ animation:charm-drop 1.2s cubic-bezier(.26,.8,.32,1) both; }
+
+.result-head{
+  flex:0 0 auto; text-align:center;
+  font-family:"Noto Serif TC",serif; font-size:14px;
+  letter-spacing:.3em; text-indent:.3em; color:var(--ink-soft);
+}
+.result-actions{ flex:0 0 auto; display:flex; gap:12px; justify-content:center; width:100%; }
+
+/* =========================================================
+   06. 提示訊息
+   ========================================================= */
+.toast{
+  position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 96px);
+  transform:translate(-50%,14px);
+  padding:11px 20px; border-radius:999px;
+  background:rgba(34,28,25,.94); color:#F6EEDC;
+  font-size:13.5px; letter-spacing:.08em;
+  opacity:0; pointer-events:none; transition:opacity .28s ease, transform .28s ease;
+  z-index:20;
+}
+.toast--show{ opacity:1; transform:translate(-50%,0); }
+
+/* =========================================================
+   07. 動態偏好設定
+   ========================================================= */
+@media (prefers-reduced-motion:reduce){
+  .is-shaking,
+  .is-drawing .stick-fly,
+  .charm--in{ animation:none !important; }
+  .stick-fly{ opacity:0 !important; }
+  .charm--in{ opacity:1; }
+}
+</style>
+</head>
+
+<body>
+<main class="stage">
+
+  <!-- ===================== 畫面一：搖籤筒 ===================== -->
+  <section class="view" id="viewDraw">
+    <header class="masthead">
+      <h1 class="masthead__title">每日諧音籤</h1>
+      <p class="masthead__sub">搖一搖，讓諧音梗替你說句吉利話</p>
+      <span class="seal" aria-hidden="true">笑</span>
+    </header>
+
+    <div class="barrel-stage" id="barrelStage">
+      <div class="barrel-wrap" id="barrelWrap">
+        <!-- 籤筒：純 SVG 繪製 -->
+        <svg class="barrel" viewBox="0 0 240 320" role="img" aria-label="裝著竹籤的紅漆籤筒">
+          <defs>
+            <linearGradient id="lacquer" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0"    stop-color="#711A13"/>
+              <stop offset=".26"  stop-color="#BE3529"/>
+              <stop offset=".44"  stop-color="#D85A4C"/>
+              <stop offset=".72"  stop-color="#A62A20"/>
+              <stop offset="1"    stop-color="#67160F"/>
+            </linearGradient>
+            <linearGradient id="bamboo" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0"   stop-color="#C6AC74"/>
+              <stop offset=".36" stop-color="#F2E5C2"/>
+              <stop offset="1"   stop-color="#C9AE78"/>
+            </linearGradient>
+            <linearGradient id="brass" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0"   stop-color="#8E6C2C"/>
+              <stop offset=".32" stop-color="#E7CE92"/>
+              <stop offset=".62" stop-color="#B48F42"/>
+              <stop offset="1"   stop-color="#8A6828"/>
+            </linearGradient>
+          </defs>
+
+          <!-- 桌面落影 -->
+          <ellipse cx="120" cy="302" rx="68" ry="11" fill="rgba(62,38,16,.2)"/>
+
+          <!-- 筒口內壁 -->
+          <ellipse cx="120" cy="110" rx="52" ry="14" fill="#45110C"/>
+
+          <!-- 竹籤（★ 想改支數就增減這幾組 g） -->
+          <g>
+            <g transform="rotate(-14 120 280)">
+              <rect x="115.5" y="46" width="9" height="214" rx="4.5" fill="url(#bamboo)"/>
+              <rect x="115.5" y="46" width="9" height="17"  rx="4.5" fill="#BE3529"/>
+            </g>
+            <g transform="rotate(-9.5 120 280)">
+              <rect x="115.5" y="52" width="9" height="208" rx="4.5" fill="url(#bamboo)"/>
+              <rect x="115.5" y="52" width="9" height="17"  rx="4.5" fill="#A62A20"/>
+            </g>
+            <g transform="rotate(-5 120 280)">
+              <rect x="115.5" y="44" width="9" height="216" rx="4.5" fill="url(#bamboo)"/>
+              <rect x="115.5" y="44" width="9" height="17"  rx="4.5" fill="#BE3529"/>
+            </g>
+            <g>
+              <rect x="115.5" y="50" width="9" height="210" rx="4.5" fill="url(#bamboo)"/>
+              <rect x="115.5" y="50" width="9" height="17"  rx="4.5" fill="#A62A20"/>
+            </g>
+            <g transform="rotate(5 120 280)">
+              <rect x="115.5" y="43" width="9" height="217" rx="4.5" fill="url(#bamboo)"/>
+              <rect x="115.5" y="43" width="9" height="17"  rx="4.5" fill="#BE3529"/>
+            </g>
+            <g transform="rotate(9.5 120 280)">
+              <rect x="115.5" y="53" width="9" height="207" rx="4.5" fill="url(#bamboo)"/>
+              <rect x="115.5" y="53" width="9" height="17"  rx="4.5" fill="#A62A20"/>
+            </g>
+            <g transform="rotate(14 120 280)">
+              <rect x="115.5" y="47" width="9" height="213" rx="4.5" fill="url(#bamboo)"/>
+              <rect x="115.5" y="47" width="9" height="17"  rx="4.5" fill="#BE3529"/>
+            </g>
+          </g>
+
+          <!-- 筒身正面 -->
+          <path d="M68,110 A52,14 0 0 0 172,110 L168,278 Q168,296 150,298 L90,298 Q72,296 72,278 Z"
+                fill="url(#lacquer)"/>
+          <!-- 漆面反光 -->
+          <path d="M88,124 C83,186 83,244 92,288" stroke="rgba(255,255,255,.26)" stroke-width="9"
+                stroke-linecap="round" fill="none"/>
+          <!-- 銅箍 -->
+          <rect x="71" y="128" width="98" height="9" rx="4.5" fill="url(#brass)"/>
+          <rect x="74" y="262" width="92" height="9" rx="4.5" fill="url(#brass)"/>
+          <!-- 筒口銅緣 -->
+          <ellipse cx="120" cy="110" rx="52" ry="14" fill="none" stroke="url(#brass)" stroke-width="4"/>
+          <!-- 籤字牌 -->
+          <rect x="96" y="168" width="48" height="60" rx="7" fill="#F5EAD2" stroke="#B48F42" stroke-width="2"/>
+          <text x="120" y="212" text-anchor="middle" fill="#8C1F18"
+                font-family="'Noto Serif TC',serif" font-size="40" font-weight="700">籤</text>
+        </svg>
+      </div>
+
+      <!-- 動畫末段跳出的那支籤 -->
+      <div class="stick-fly" id="stickFly" aria-hidden="true"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn--draw" id="btnDraw" type="button">搖一搖抽籤</button>
+      <button class="linkish" id="btnMotion" type="button" hidden>改用搖手機抽籤</button>
+      <p class="hint" id="hint" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ===================== 畫面二：籤牌吊飾 ===================== -->
+  <section class="view" id="viewResult" hidden>
+    <p class="result-head">每日諧音籤</p>
+
+    <div class="result-scroll">
+      <div class="charm" id="charm">
+        <!-- 吊繩 -->
+        <svg class="charm__cord" viewBox="0 0 120 92" aria-hidden="true">
+          <defs>
+            <linearGradient id="cord" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0"   stop-color="#8E211A"/>
+              <stop offset=".4"  stop-color="#D4564A"/>
+              <stop offset="1"   stop-color="#8E211A"/>
+            </linearGradient>
+          </defs>
+          <path d="M60,84 C31,64 29,22 60,7 C91,22 89,64 60,84 Z"
+                fill="none" stroke="url(#cord)" stroke-width="5" stroke-linecap="round"/>
+          <rect x="50" y="72" width="20" height="13" rx="6" fill="#A5271F"/>
+          <rect x="50" y="72" width="20" height="5"  rx="2.5" fill="rgba(255,255,255,.22)"/>
+        </svg>
+
+        <article class="tag">
+          <span class="tag__eyelet" aria-hidden="true"></span>
+
+          <div class="tag__meta">
+            <span class="tag__no" id="tagNo">第一籤</span>
+            <span class="tag__grade" id="tagGrade">上上籤</span>
+          </div>
+
+          <h2 class="tag__keyword" id="tagKeyword">海苔人生</h2>
+          <div class="tag__rule" aria-hidden="true"></div>
+          <p class="tag__pun" id="tagPun"></p>
+
+          <div class="tag__advice" id="tagAdvice"></div>
+        </article>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn btn--again" id="btnAgain" type="button">再抽一次</button>
+      <button class="btn btn--copy"  id="btnCopy"  type="button">複製結果分享</button>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   ★ 籤詩資料：直接在這個陣列裡增刪，其他程式碼都不用動
+   欄位：grade 籤種 / keyword 諧音梗核心 / pun 解籤 / advice 宜忌
+   ========================================================= */
+const punFortunes = [
+  {
+    grade: "上上籤",
+    keyword: "海苔人生",
+    pun: "今天心情不好嗎？沒關係，笑一個，世界就跟著你海苔（嗨起來）！",
+    advice: "宜：大吃一頓 / 忌：悶在心裡"
+  },
+  {
+    grade: "大吉籤",
+    keyword: "鴨梨山大",
+    pun: "走到半山腰突然很累，原來是路邊的鴨子掉了滿地梨子——『鴨梨山大』。",
+    advice: "宜：及時行樂 / 忌：把壓力當飯吃"
+  },
+  {
+    grade: "特吉籤",
+    keyword: "獅子大開口",
+    pun: "去動物園點飲料，獅子突然問我要不要加珍珠，這就叫『獅子大開口』。",
+    advice: "宜：痛快花錢 / 忌：猶豫不決"
+  },
+  {
+    grade: "上上諧",
+    keyword: "柚見美好",
+    pun: "轉角撞到一顆柚子，它抬頭說好久不見，於是今天就這樣『柚』見美好了。",
+    advice: "宜：主動打招呼 / 忌：一路低頭滑手機"
+  },
+  {
+    grade: "超級諧",
+    keyword: "莓事莓事",
+    pun: "草莓最會安慰人，因為牠開口第一句永遠是：莓事莓事，天還沒塌。",
+    advice: "宜：說聲沒關係 / 忌：把小事放大"
+  },
+  {
+    grade: "中吉籤",
+    keyword: "薪情愉快",
+    pun: "老闆說要讓你心情變好，結果只改了一個字：薪情愉快。",
+    advice: "宜：開口談加薪 / 忌：先打開帳單"
+  },
+  {
+    grade: "諧音滿分籤",
+    keyword: "蔥明一世",
+    pun: "考卷寫不出來就先撒點蔥，老師說這叫『蔥』明一世，糊塗一時。",
+    advice: "宜：臨時抱佛腳 / 忌：連抱都不抱"
+  },
+  {
+    grade: "小確幸籤",
+    keyword: "豆你開心",
+    pun: "冰箱只剩最後一碗豆花，但它正在非常努力地『豆』你開心。",
+    advice: "宜：吃甜的 / 忌：今天才想節食"
+  },
+  {
+    grade: "平安籤",
+    keyword: "蟹蟹招待",
+    pun: "螃蟹請你吃飯，臨走前還橫著走了兩步說：蟹蟹、蟹蟹。",
+    advice: "宜：好好道謝 / 忌：把好意當應該"
+  },
+  {
+    grade: "鹹魚籤",
+    keyword: "鹹魚翻身",
+    pun: "鹹魚翻身之後還是鹹魚，但至少這次兩面都曬得很均勻。",
+    advice: "宜：躺平充電 / 忌：一直責備自己"
+  },
+  {
+    grade: "末吉籤",
+    keyword: "桃之夭夭",
+    pun: "麻煩找上門的時候，記得跟水蜜桃學一招——『桃』之夭夭。",
+    advice: "宜：暫時閃避 / 忌：硬碰硬"
+  },
+  {
+    grade: "無厘頭籤",
+    keyword: "雞不可失",
+    pun: "機會來的時候通常會咯咯叫，所以古人才說『雞』不可失。",
+    advice: "宜：立刻答應 / 忌：想到天亮"
+  }
+];
+
+/* =========================================================
+   以下為程式邏輯，一般情況不需要修改
+   ========================================================= */
+const CN_NUM = ["零","一","二","三","四","五","六","七","八","九","十"];
+
+const el = {
+  viewDraw:   document.getElementById("viewDraw"),
+  viewResult: document.getElementById("viewResult"),
+  barrelStage:document.getElementById("barrelStage"),
+  barrelWrap: document.getElementById("barrelWrap"),
+  btnDraw:    document.getElementById("btnDraw"),
+  btnMotion:  document.getElementById("btnMotion"),
+  btnAgain:   document.getElementById("btnAgain"),
+  btnCopy:    document.getElementById("btnCopy"),
+  hint:       document.getElementById("hint"),
+  charm:      document.getElementById("charm"),
+  tagNo:      document.getElementById("tagNo"),
+  tagGrade:   document.getElementById("tagGrade"),
+  tagKeyword: document.getElementById("tagKeyword"),
+  tagPun:     document.getElementById("tagPun"),
+  tagAdvice:  document.getElementById("tagAdvice"),
+  toast:      document.getElementById("toast")
+};
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let isDrawing = false;      // 動畫進行中的鎖
+let lastIndex = -1;         // 避免連續抽到同一支
+let current = null;         // 目前這張籤（複製分享用）
+let motionOn = false;       // 是否已啟用搖晃感應
+
+/* ---------- 小工具 ---------- */
+function toChinese(n){
+  if(n <= 10) return CN_NUM[n];
+  if(n < 20)  return "十" + (n % 10 === 0 ? "" : CN_NUM[n % 10]);
+  return CN_NUM[Math.floor(n / 10)] + "十" + (n % 10 === 0 ? "" : CN_NUM[n % 10]);
+}
+
+function showToast(msg){
+  el.toast.textContent = msg;
+  el.toast.classList.add("toast--show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.toast.classList.remove("toast--show"), 2000);
+}
+
+function pickIndex(){
+  if(punFortunes.length === 1) return 0;
+  let i;
+  do { i = Math.floor(Math.random() * punFortunes.length); } while(i === lastIndex);
+  lastIndex = i;
+  return i;
+}
+
+/* ---------- 把「宜：A / 忌：B」拆成兩欄 ---------- */
+function renderAdvice(text){
+  el.tagAdvice.innerHTML = "";
+  const parts = String(text).split("/").map(s => s.trim()).filter(Boolean);
+  const kinds = ["do","avoid"];
+
+  parts.slice(0, 2).forEach((part, i) => {
+    const seg = part.split(/[:：]/);
+    const label = (seg[0] || "").trim();
+    const value = (seg.slice(1).join("：") || "").trim();
+
+    const cell = document.createElement("div");
+    cell.className = "advice__cell advice__cell--" + (kinds[i] || "do");
+    cell.innerHTML =
+      '<span class="advice__label"></span><span class="advice__value"></span>';
+    cell.querySelector(".advice__label").textContent = label;
+    cell.querySelector(".advice__value").textContent = value;
+    el.tagAdvice.appendChild(cell);
+  });
+}
+
+/* ---------- 顯示籤牌 ---------- */
+function showResult(index){
+  const item = punFortunes[index];
+  current = { ...item, no: index + 1 };
+
+  el.tagNo.textContent      = "第" + toChinese(index + 1) + "籤";
+  el.tagGrade.textContent   = item.grade;
+  el.tagKeyword.textContent = item.keyword;
+  el.tagPun.textContent     = item.pun;
+  renderAdvice(item.advice);
+
+  el.viewDraw.hidden   = true;
+  el.viewResult.hidden = false;
+
+  el.charm.classList.remove("charm--in");
+  void el.charm.offsetWidth;              // 重置動畫
+  el.charm.classList.add("charm--in");
+
+  el.btnAgain.focus({ preventScroll:true });
+}
+
+/* ---------- 抽籤主流程 ---------- */
+function drawFortune(){
+  if(isDrawing || !el.viewResult.hidden) return;
+  isDrawing = true;
+  el.btnDraw.disabled = true;
+  el.hint.textContent = "籤筒搖動中⋯⋯";
+
+  const index = pickIndex();
+
+  if(reduceMotion){
+    setTimeout(() => { finish(index); }, 150);
+    return;
+  }
+
+  el.barrelWrap.classList.add("is-shaking");
+  el.barrelStage.classList.add("is-drawing");
+  setTimeout(() => { finish(index); }, 1350);
+}
+
+function finish(index){
+  el.barrelWrap.classList.remove("is-shaking");
+  el.barrelStage.classList.remove("is-drawing");
+  el.hint.textContent = "";
+  showResult(index);
+  isDrawing = false;
+  el.btnDraw.disabled = false;
+}
+
+/* ---------- 回到籤筒 ---------- */
+function resetToDraw(){
+  el.viewResult.hidden = true;
+  el.viewDraw.hidden   = false;
+  el.charm.classList.remove("charm--in");
+  el.btnDraw.disabled = false;
+  isDrawing = false;
+  el.btnDraw.focus({ preventScroll:true });
+}
+
+/* ---------- 複製分享 ---------- */
+function shareText(){
+  if(!current) return "";
+  return [
+    "【每日諧音籤・第" + toChinese(current.no) + "籤】",
+    current.grade + "｜" + current.keyword,
+    current.pun,
+    current.advice
+  ].join("\n");
+}
+
+async function copyResult(){
+  const text = shareText();
+  if(!text) return;
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast("已複製，快去貼給朋友");
+  }catch(err){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand && document.execCommand("copy");
+    document.body.removeChild(ta);
+    showToast(ok ? "已複製，快去貼給朋友" : "這個瀏覽器不給複製，先截圖吧");
+  }
+}
+
+/* ---------- 搖手機抽籤（選配） ---------- */
+const SHAKE_THRESHOLD = 22;   // ★ 想更靈敏就調小，太容易誤觸就調大
+let lastShakeAt = 0;
+
+function onDeviceMotion(e){
+  const a = e.accelerationIncludingGravity;
+  if(!a) return;
+  const force = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2);
+  const now = Date.now();
+  if(force > SHAKE_THRESHOLD && now - lastShakeAt > 2000){
+    lastShakeAt = now;
+    if(!el.viewDraw.hidden) drawFortune();
+  }
+}
+
+function attachMotion(){
+  window.addEventListener("devicemotion", onDeviceMotion);
+  motionOn = true;
+  el.btnMotion.hidden = true;
+  el.hint.textContent = "感應已開啟，用力搖手機就會抽籤";
+}
+
+function enableMotion(){
+  if(motionOn) return;
+  if(typeof DeviceMotionEvent !== "undefined" &&
+     typeof DeviceMotionEvent.requestPermission === "function"){
+    DeviceMotionEvent.requestPermission()
+      .then(state => {
+        if(state === "granted") attachMotion();
+        else el.hint.textContent = "沒拿到感測權限，按按鈕抽一樣靈";
+      })
+      .catch(() => { el.hint.textContent = "這台裝置不支援搖晃感應，按按鈕就好"; });
+  }else if("DeviceMotionEvent" in window){
+    attachMotion();
+  }else{
+    el.btnMotion.hidden = true;
+    el.hint.textContent = "這台裝置沒有搖晃感應，按按鈕就好";
+  }
+}
+
+/* ---------- 事件綁定 ---------- */
+el.btnDraw.addEventListener("click", drawFortune);
+el.btnAgain.addEventListener("click", () => { resetToDraw(); drawFortune(); });
+el.btnCopy.addEventListener("click", copyResult);
+el.btnMotion.addEventListener("click", enableMotion);
+
+/* 手機才顯示搖晃選項 */
+if("DeviceMotionEvent" in window && window.matchMedia("(pointer:coarse)").matches){
+  el.btnMotion.hidden = false;
+}
+
+/* 防止 iOS Safari 雙指縮放與橡皮筋捲動 */
+document.addEventListener("gesturestart", e => e.preventDefault());
+document.addEventListener("touchmove", e => {
+  const t = e.target;
+  const inScroll = t instanceof Element && t.closest(".result-scroll");
+  if(!inScroll) e.preventDefault();
+}, { passive:false });
+</script>
+</body>
+</html>
