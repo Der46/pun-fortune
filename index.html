@@ -6,8 +6,8 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#1C3B2A">
-  <meta name="description" content="掃碼即玩的四色牌諧音籤：搖一搖摸二十張，照四色牌規則湊一副，配一張諧音梗吊牌。">
-  <title>四色諧音牌・摸一副好運</title>
+  <meta name="description" content="四色牌傳統同盟規則：紅黃配、綠白配。56張古法牌庫，搖一搖摸一副好籤。">
+  <title>四色諧音牌・同盟好運籤</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,9 +16,6 @@
     rel="stylesheet">
 
   <style>
-    /* =========================================================
-   01. 設計變數
-   ========================================================= */
     :root {
       --felt: #234536;
       --felt-deep: #142A1D;
@@ -90,9 +87,6 @@
         repeating-linear-gradient(-45deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 6px);
     }
 
-    /* =========================================================
-   02. 版面骨架
-   ========================================================= */
     .stage {
       position: relative;
       z-index: 1;
@@ -109,13 +103,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding:
-        calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px);
+      padding: calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px);
     }
 
-    /* =========================================================
-   03. 標題
-   ========================================================= */
     .masthead {
       flex: 0 0 auto;
       text-align: center;
@@ -158,9 +148,7 @@
       line-height: 1;
     }
 
-    /* =========================================================
-   04. 四色牌牌面
-   ========================================================= */
+    /* 四色牌面 */
     .tile {
       position: relative;
       display: flex;
@@ -189,14 +177,14 @@
       background: linear-gradient(168deg, var(--tile-red-a), var(--tile-red-b));
     }
 
-    .tile--green {
-      --tile-ink: var(--tile-green-ink);
-      background: linear-gradient(168deg, var(--tile-green-a), var(--tile-green-b));
-    }
-
     .tile--yellow {
       --tile-ink: var(--tile-yellow-ink);
       background: linear-gradient(168deg, var(--tile-yellow-a), var(--tile-yellow-b));
+    }
+
+    .tile--green {
+      --tile-ink: var(--tile-green-ink);
+      background: linear-gradient(168deg, var(--tile-green-a), var(--tile-green-b));
     }
 
     .tile--white {
@@ -205,9 +193,6 @@
       border: 1px solid rgba(120, 110, 88, .45);
     }
 
-    /* =========================================================
-   05. 牌桌與飛牌動畫
-   ========================================================= */
     .table-stage {
       flex: 1 1 auto;
       min-height: 0;
@@ -353,16 +338,15 @@
       }
     }
 
-    /* =========================================================
-   06. 按鈕與提示
-   ========================================================= */
     .actions {
       flex: 0 0 auto;
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      min-height: 84px;
+      justify-content: center;
     }
 
     .btn {
@@ -423,15 +407,40 @@
       text-indent: .12em;
     }
 
-    .linkish {
-      background: none;
-      border: 0;
-      padding: 4px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 12.5px;
-      color: var(--cream-soft);
-      border-bottom: 1px dashed rgba(201, 192, 170, .5);
+    .shake-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .35);
+      border: 1px solid rgba(223, 195, 132, .4);
+      color: var(--cream);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: .08em;
+    }
+
+    .shake-badge__icon {
+      display: inline-block;
+      animation: phone-wiggle 1.2s infinite ease-in-out;
+      font-size: 18px;
+    }
+
+    @keyframes phone-wiggle {
+
+      0%,
+      100% {
+        transform: rotate(0deg);
+      }
+
+      25% {
+        transform: rotate(-18deg);
+      }
+
+      75% {
+        transform: rotate(18deg);
+      }
     }
 
     .hint {
@@ -441,7 +450,7 @@
       color: var(--cream-soft);
       min-height: 1.2em;
       text-align: center;
-      max-width: 300px;
+      max-width: 320px;
       white-space: pre-line;
     }
 
@@ -449,9 +458,7 @@
       color: #FFB4A6;
     }
 
-    /* =========================================================
-   07. 開牌後：手牌區（置中、單屏、強烈中獎特效）
-   ========================================================= */
+    /* 開牌結果 */
     #viewResult {
       height: 100dvh;
       max-height: 100dvh;
@@ -463,7 +470,6 @@
       padding-bottom: calc(env(safe-area-inset-bottom) + 14px);
     }
 
-    /* 調整此處：居中排列、上下均勻間距，讓手牌位置更靠中央 */
     .result-scroll {
       flex: 1 1 auto;
       min-height: 0;
@@ -473,7 +479,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: clamp(10px, 2.5vh, 22px);
+      gap: clamp(10px, 2.2vh, 18px);
       padding: 0;
     }
 
@@ -484,7 +490,7 @@
     }
 
     .hand__label {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       font-size: 13.5px;
       font-weight: 500;
       letter-spacing: .08em;
@@ -497,11 +503,12 @@
       font-weight: 700;
     }
 
-    /* 20 支手牌緊湊排版：10 欄 × 2 列 */
+    /* 手牌網格：上下留足 12px 距離避免吃字 */
     .hand__grid {
       display: grid;
       grid-template-columns: repeat(10, 1fr);
-      gap: 4px;
+      column-gap: 4px;
+      row-gap: 12px;
       width: 100%;
       max-width: 350px;
       margin: 0 auto;
@@ -515,44 +522,40 @@
       transition: transform .25s ease, opacity .25s ease, filter .25s ease;
     }
 
-    /* ★★★ 中獎牌特效：強烈浮起放大 + 雙層金色呼吸燈 ★★★ */
     @keyframes win-glow {
 
       0%,
       100% {
         box-shadow:
           0 0 0 2px #FFE58F,
-          0 0 8px 2px rgba(255, 215, 0, 0.7),
-          0 8px 16px -4px rgba(0, 0, 0, 0.9);
+          0 0 7px 2px rgba(255, 215, 0, 0.7),
+          0 6px 12px -3px rgba(0, 0, 0, 0.85);
       }
 
       50% {
         box-shadow:
-          0 0 0 2.5px #FFFFFF,
-          0 0 18px 6px rgba(255, 215, 0, 0.98),
-          0 12px 22px -4px rgba(0, 0, 0, 0.95);
+          0 0 0 2px #FFFFFF,
+          0 0 14px 4px rgba(255, 215, 0, 0.95),
+          0 8px 16px -3px rgba(0, 0, 0, 0.9);
       }
     }
 
     .hand__grid .tile--hit {
       z-index: 10 !important;
       position: relative !important;
-      transform: translateY(-5px) scale(1.12) !important;
+      transform: translateY(-3px) scale(1.06) !important;
       border: 1.5px solid #FFF3C4 !important;
       animation: win-glow 1.25s ease-in-out infinite !important;
-      filter: brightness(1.12) contrast(1.1);
+      filter: brightness(1.1) contrast(1.05);
     }
 
-    /* ★ 未中獎散牌：壓暗半透明 + 稍微縮小襯托中獎者 */
     .hand__grid .tile--dim {
-      opacity: .22 !important;
-      filter: saturate(.3) brightness(.8) !important;
-      transform: scale(.93) !important;
+      opacity: 0.35 !important;
+      filter: saturate(.35) brightness(.85) !important;
+      transform: scale(.95) !important;
     }
 
-    /* =========================================================
-   08. 籤牌區
-   ========================================================= */
+    /* 籤牌吊飾 */
     .charm {
       position: relative;
       flex: 0 1 auto;
@@ -560,7 +563,7 @@
       width: 100%;
       max-width: 320px;
       margin: 0 auto;
-      padding-top: 26px;
+      padding-top: 24px;
       transform-origin: 50% 6px;
     }
 
@@ -570,7 +573,7 @@
       left: 50%;
       margin-left: -44px;
       width: 88px;
-      height: 58px;
+      height: 54px;
       z-index: 3;
       pointer-events: none;
     }
@@ -578,7 +581,7 @@
     .tag {
       --accent: var(--a-mixed);
       position: relative;
-      padding: 24px 18px 14px;
+      padding: 22px 18px 12px;
       border-radius: 18px;
       border: 1px solid var(--accent);
       color: var(--ink);
@@ -612,20 +615,20 @@
     }
 
     .tag__band--top {
-      top: 12px;
+      top: 11px;
     }
 
     .tag__band--bottom {
-      bottom: 10px;
+      bottom: 9px;
     }
 
     .tag__eyelet {
       position: absolute;
-      top: 11px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      width: 19px;
-      height: 19px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       border: 4px solid #B5912F;
       background: radial-gradient(circle at 50% 32%, #4A3B2C, #7A6851);
@@ -642,7 +645,7 @@
 
     .tag__meld {
       font-family: "Noto Serif TC", serif;
-      font-size: 13.5px;
+      font-size: 13px;
       letter-spacing: .1em;
       color: var(--accent);
       font-weight: 700;
@@ -662,11 +665,11 @@
     }
 
     .tag__keyword {
-      margin: 10px 0 0;
+      margin: 8px 0 0;
       text-align: center;
       font-family: "Noto Serif TC", serif;
       font-weight: 900;
-      font-size: clamp(23px, 6.8vw, 30px);
+      font-size: clamp(23px, 6.8vw, 29px);
       line-height: 1.15;
       letter-spacing: .12em;
       text-indent: .12em;
@@ -674,9 +677,9 @@
     }
 
     .tag__rule {
-      width: 46px;
+      width: 44px;
       height: 3px;
-      margin: 7px auto 8px;
+      margin: 6px auto 7px;
       border-top: 2px solid var(--accent);
       border-bottom: 1px solid var(--accent);
       opacity: .75;
@@ -684,20 +687,16 @@
 
     .tag__pun {
       margin: 0;
-      font-size: 13px;
-      line-height: 1.6;
+      font-size: 12.5px;
+      line-height: 1.55;
       color: var(--ink-soft);
       text-align: justify;
       text-justify: inter-ideograph;
     }
 
-    .tag__note {
-      display: none;
-    }
-
     .tag__advice {
-      margin-top: 10px;
-      padding-top: 8px;
+      margin-top: 8px;
+      padding-top: 7px;
       border-top: 1px solid rgba(168, 130, 62, .3);
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -715,7 +714,7 @@
     .advice__label {
       display: block;
       font-family: "Noto Serif TC", serif;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       margin-bottom: 2px;
     }
@@ -729,9 +728,9 @@
     }
 
     .advice__value {
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--ink-soft);
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
     @keyframes charm-drop {
@@ -775,12 +774,9 @@
       gap: 10px;
       justify-content: center;
       width: 100%;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
-    /* =========================================================
-   09. 提示訊息與自適應
-   ========================================================= */
     .toast {
       position: fixed;
       left: 50%;
@@ -802,81 +798,18 @@
       opacity: 1;
       transform: translate(-50%, 0);
     }
-
-    @media (prefers-reduced-motion:reduce) {
-
-      .is-shaking,
-      .fly-tile,
-      .charm--in,
-      .hand__grid .tile--hit {
-        animation: none !important;
-      }
-
-      .fly-tile {
-        opacity: 0 !important;
-      }
-
-      .charm--in {
-        opacity: 1;
-      }
-
-      .hand__grid .tile--hit {
-        box-shadow: 0 0 12px 3px rgba(255, 215, 0, 0.9) !important;
-        transform: translateY(-4px) scale(1.1) !important;
-      }
-    }
-
-    @media (max-height:680px) {
-      .fan {
-        transform: scale(.84);
-      }
-
-      .charm {
-        padding-top: 20px;
-      }
-
-      .tag {
-        padding: 16px 14px 10px;
-      }
-
-      .tag__keyword {
-        font-size: 22px;
-        margin-top: 6px;
-      }
-
-      .tag__pun {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-      }
-    }
-
-    @media (max-height:600px) {
-      .result-head {
-        display: none;
-      }
-
-      .charm__cord {
-        display: none;
-      }
-
-      .charm {
-        padding-top: 4px;
-      }
-    }
   </style>
 </head>
 
 <body>
   <main class="stage">
 
-    <!-- ===================== 畫面一：牌桌 ===================== -->
+    <!-- 畫面一：牌桌 -->
     <section class="view" id="viewDraw">
       <header class="masthead">
         <span class="seal" aria-hidden="true">諧</span>
         <h1 class="masthead__title">四色諧音牌</h1>
-        <p class="masthead__sub">搖一搖摸二十張，湊成一副就是你的籤</p>
+        <p class="masthead__sub">紅黃為朋・綠白為友｜搖一搖摸一副好籤</p>
       </header>
 
       <div class="table-stage" id="tableStage">
@@ -896,18 +829,20 @@
       </div>
 
       <div class="actions">
-        <button class="btn btn--draw" id="btnDraw" type="button">搖一搖摸牌</button>
-        <button class="linkish" id="btnMotion" type="button" hidden>改用搖手機摸牌</button>
+        <div class="shake-badge" id="shakeBadge" hidden>
+          <span class="shake-badge__icon" aria-hidden="true">📱</span>
+          <span>拿穩手機，用力搖一搖摸牌</span>
+        </div>
+        <button class="btn btn--draw" id="btnDraw" type="button">按我摸牌</button>
         <p class="hint" id="hint" role="status" aria-live="polite"></p>
       </div>
     </section>
 
-    <!-- ===================== 畫面二：開牌結果 ===================== -->
+    <!-- 畫面二：開牌結果 -->
     <section class="view" id="viewResult" hidden>
-      <p class="result-head">四色諧音牌</p>
+      <p class="result-head">四色諧音牌・同盟好運</p>
 
       <div class="result-scroll">
-
         <!-- 手牌區：二十支牌 -->
         <section class="hand">
           <h2 class="hand__label" id="handLabel"></h2>
@@ -947,7 +882,6 @@
             <span class="tag__band tag__band--bottom" aria-hidden="true"></span>
           </article>
         </div>
-
       </div>
 
       <div class="result-actions">
@@ -974,26 +908,39 @@
     ];
 
     const SUITS = [
-      { id: "yellow", label: "黃", army: "red" },
-      { id: "red", label: "紅", army: "red" },
-      { id: "green", label: "綠", army: "black" },
-      { id: "white", label: "白", army: "black" }
+      { id: "yellow", label: "黃", army: "red", alliance: "red_alliance" },
+      { id: "red", label: "紅", army: "red", alliance: "red_alliance" },
+      { id: "green", label: "綠", army: "black", alliance: "black_alliance" },
+      { id: "white", label: "白", army: "black", alliance: "black_alliance" }
     ];
 
-    const COPIES = 4;
+    const COPIES = 2;
     const HAND_SIZE = 20;
 
-    const GENERAL_SET = ["general", "guard", "elephant"];
-    const CHARIOT_SET = ["chariot", "horse", "cannon"];
+    /* ★★★ 等級稀有度階梯權重（加總 100%） ★★★ */
+    const GRADE_WEIGHTS = [
+      { grade: "上上籤", weight: 4 },  // 4%  頂格大籤
+      { grade: "特上籤", weight: 8 },  // 8%  爆發機運籤
+      { grade: "大吉籤", weight: 14 }, // 14% 熱門吉祥籤
+      { grade: "中吉籤", weight: 20 }, // 20% 平穩前進籤
+      { grade: "小吉籤", weight: 22 }, // 22% 扎實穩健籤
+      { grade: "平安籤", weight: 20 }, // 20% 歲月靜好籤
+      { grade: "末吉籤", weight: 12 }  // 12% 幽默轉運籤
+    ];
 
-    const REQUIRED_MELDS = ["four_pawn", "kong", "three_pawn", "general_set", "pong", "chariot_set", "pair", "none"];
-    const CN_NUM = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+    /* ★★★ 保底與冷卻記憶體設定 ★★★ */
+    const COOLDOWN_LIMIT = 5;
+    const STORAGE_KEY_RECENT = "four_color_fortune_recent_ids";
+    const STORAGE_KEY_SEEN = "four_color_fortune_seen_ids";
 
-    let meldConfig = {};
     let fortunePool = [];
     let currentHand = [];
     let currentMeld = null;
     let currentFortune = null;
+
+    // 讀取本地快取的最近 5 次歷史紀錄與已抽過記錄
+    let recentHistory = loadStorageList(STORAGE_KEY_RECENT);
+    let seenHistory = new Set(loadStorageList(STORAGE_KEY_SEEN));
 
     const el = {
       viewDraw: document.getElementById("viewDraw"),
@@ -1001,8 +948,8 @@
       tableStage: document.getElementById("tableStage"),
       fan: document.getElementById("fan"),
       flyLayer: document.getElementById("flyLayer"),
+      shakeBadge: document.getElementById("shakeBadge"),
       btnDraw: document.getElementById("btnDraw"),
-      btnMotion: document.getElementById("btnMotion"),
       btnAgain: document.getElementById("btnAgain"),
       btnCopy: document.getElementById("btnCopy"),
       hint: document.getElementById("hint"),
@@ -1020,13 +967,25 @@
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let isDrawing = false;
-    let motionOn = false;
+    let motionSupported = false;
+    let motionActive = false;
+    let isIOSRequiringPermission = false;
 
-    function toChinese(n) {
-      if (n <= 10) return CN_NUM[n];
-      if (n < 20) return "十" + (n % 10 === 0 ? "" : CN_NUM[n % 10]);
-      return CN_NUM[Math.floor(n / 10)] + "十" + (n % 10 === 0 ? "" : CN_NUM[n % 10]);
+    function loadStorageList(key) {
+      try {
+        const val = localStorage.getItem(key);
+        return val ? JSON.parse(val) : [];
+      } catch (e) {
+        return [];
+      }
     }
+
+    function saveStorageList(key, val) {
+      try {
+        localStorage.setItem(key, JSON.stringify(val));
+      } catch (e) { }
+    }
+
     function showToast(msg) {
       el.toast.textContent = msg;
       el.toast.classList.add("toast--show");
@@ -1044,13 +1003,15 @@
               suit: suit.id,
               label: suit.label,
               piece: piece.id,
-              glyph: glyph
+              glyph: glyph,
+              alliance: suit.alliance
             });
           }
         }
       }
       return deck;
     }
+
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1058,62 +1019,115 @@
       }
       return arr;
     }
-    function dealHand() {
-      return shuffle(buildDeck()).slice(0, HAND_SIZE);
+
+    /* ★★★ 核心演算法：5次防重複 + 全池均勻涵蓋保底 ★★★ */
+    function pickTargetFortuneWithGuarantees() {
+      // 1. 若全池 56 支籤都已經被看過一遍，重置已見紀錄，開啟新一輪循環
+      if (seenHistory.size >= fortunePool.length) {
+        seenHistory.clear();
+        saveStorageList(STORAGE_KEY_SEEN, []);
+      }
+
+      // 2. 依照等級權重決定目標等級
+      const rnd = Math.random() * 100;
+      let acc = 0;
+      let targetGrade = "小吉籤";
+
+      for (const item of GRADE_WEIGHTS) {
+        acc += item.weight;
+        if (rnd <= acc) {
+          targetGrade = item.grade;
+          break;
+        }
+      }
+
+      // 3. 排除最近 5 次抽過的籤（嚴格防重複）
+      const cooldownSet = new Set(recentHistory);
+      let candidates = fortunePool.filter(f => !cooldownSet.has(f.id));
+
+      // 若過濾後全域池不足，強制縮減冷卻長度回退
+      if (candidates.length === 0) {
+        candidates = [...fortunePool];
+      }
+
+      // 4. 優先從符合「目標等級」的未冷卻候選籤中挑選
+      let gradeMatches = candidates.filter(f => f.grade === targetGrade);
+
+      // 如果該等級內的所有籤剛好都在 5 次冷卻內，則退回該等級全部籤（允許極端冷卻放行）或使用相近候選
+      let chosenFortune = null;
+      if (gradeMatches.length > 0) {
+        // 在符合等級的籤中，優先挑選「還沒看過（未被收集過）」的籤
+        const unseenMatches = gradeMatches.filter(f => !seenHistory.has(f.id));
+        chosenFortune = unseenMatches.length > 0
+          ? unseenMatches[Math.floor(Math.random() * unseenMatches.length)]
+          : gradeMatches[Math.floor(Math.random() * gradeMatches.length)];
+      } else {
+        // 該等級暫時不可用，從候選池中挑選
+        const unseenCandidates = candidates.filter(f => !seenHistory.has(f.id));
+        chosenFortune = unseenCandidates.length > 0
+          ? unseenCandidates[Math.floor(Math.random() * unseenCandidates.length)]
+          : candidates[Math.floor(Math.random() * candidates.length)];
+      }
+
+      // 5. 更新冷卻隊列（FIFO，保持最多 5 次紀錄）
+      recentHistory.push(chosenFortune.id);
+      if (recentHistory.length > COOLDOWN_LIMIT) {
+        recentHistory.shift();
+      }
+      saveStorageList(STORAGE_KEY_RECENT, recentHistory);
+
+      // 6. 更新已見集合
+      seenHistory.add(chosenFortune.id);
+      saveStorageList(STORAGE_KEY_SEEN, Array.from(seenHistory));
+
+      return chosenFortune;
     }
 
-    function findMeld(hand) {
-      const sameCard = new Map();
-      const bySuit = new Map();
-      const pawnBySuit = new Map();
+    /* 生成精準 20 張手牌演算法 */
+    function dealWeightedHand() {
+      const chosenFortune = pickTargetFortuneWithGuarantees();
+      currentFortune = chosenFortune;
 
-      hand.forEach((card, i) => {
-        const key = card.suit + "-" + card.piece;
-        if (!sameCard.has(key)) sameCard.set(key, []);
-        sameCard.get(key).push(i);
+      let deck = buildDeck();
+      let seed = [];
 
-        if (!bySuit.has(card.suit)) bySuit.set(card.suit, new Map());
-        const pieceMap = bySuit.get(card.suit);
-        if (!pieceMap.has(card.piece)) pieceMap.set(card.piece, i);
-
-        if (card.piece === "pawn" && !pawnBySuit.has(card.suit)) {
-          pawnBySuit.set(card.suit, i);
+      // 取出籤詩指定的 2 張種子牌
+      for (const cardKey of chosenFortune.cards) {
+        const [suit, piece] = cardKey.split("-");
+        const idx = deck.findIndex(c => c.suit === suit && c.piece === piece);
+        if (idx !== -1) {
+          seed.push(deck.splice(idx, 1)[0]);
         }
+      }
+
+      if (seed.length < 2) {
+        return shuffle(buildDeck()).slice(0, HAND_SIZE);
+      }
+
+      // 隨機填入其餘 18 張牌
+      const remainDeck = shuffle([...deck]);
+      const hand = [...seed];
+
+      while (hand.length < HAND_SIZE && remainDeck.length > 0) {
+        hand.push(remainDeck.pop());
+      }
+
+      // 隨機打亂手牌並標註種子牌位置
+      const finalHand = shuffle(hand);
+      const hitIndices = [];
+      seed.forEach(s => {
+        const found = finalHand.findIndex((c, i) =>
+          !hitIndices.includes(i) && c.suit === s.suit && c.piece === s.piece
+        );
+        if (found !== -1) hitIndices.push(found);
       });
 
-      // 1. 開（槓）8 胡
-      for (const idx of sameCard.values()) {
-        if (idx.length >= 4) return { id: "kong", cards: idx.slice(0, 4) };
-      }
-      // 2. 四色卒 5 胡
-      if (pawnBySuit.size >= 4) {
-        return { id: "four_pawn", cards: [...pawnBySuit.values()].slice(0, 4) };
-      }
-      // 3. 三色卒 3 胡
-      if (pawnBySuit.size >= 3) {
-        return { id: "three_pawn", cards: [...pawnBySuit.values()].slice(0, 3) };
-      }
-      // 4. 碰 3 胡
-      for (const idx of sameCard.values()) {
-        if (idx.length >= 3) return { id: "pong", cards: idx.slice(0, 3) };
-      }
-      // 5. 同色將士象 2 胡
-      for (const pieceMap of bySuit.values()) {
-        if (GENERAL_SET.every(p => pieceMap.has(p))) {
-          return { id: "general_set", cards: GENERAL_SET.map(p => pieceMap.get(p)) };
-        }
-      }
-      // 6. 同色車馬包 1 胡
-      for (const pieceMap of bySuit.values()) {
-        if (CHARIOT_SET.every(p => pieceMap.has(p))) {
-          return { id: "chariot_set", cards: CHARIOT_SET.map(p => pieceMap.get(p)) };
-        }
-      }
-      // 7. 對子 0 胡
-      for (const idx of sameCard.values()) {
-        if (idx.length >= 2) return { id: "pair", cards: idx.slice(0, 2) };
-      }
-      return { id: "none", cards: [] };
+      currentMeld = {
+        id: "alliance_combo",
+        cards: hitIndices
+      };
+
+      return finalHand;
     }
 
     function spawnFlyingTiles(hand) {
@@ -1128,6 +1142,7 @@
         el.flyLayer.appendChild(fly);
       });
     }
+
     function clearFlyingTiles() {
       el.flyLayer.innerHTML = "";
     }
@@ -1145,13 +1160,6 @@
       bottom.setAttribute("aria-hidden", "true");
       tile.append(top, bottom);
       return tile;
-    }
-
-    function accentOf(meld, hand) {
-      if (!meld.cards.length) return "var(--a-mixed)";
-      const suits = new Set(meld.cards.map(i => hand[i].suit));
-      if (suits.size > 1) return "var(--a-mixed)";
-      return "var(--a-" + [...suits][0] + ")";
     }
 
     function renderAdvice(text) {
@@ -1172,28 +1180,27 @@
     }
 
     function renderResult() {
-      const cfg = meldConfig[currentMeld.id];
       const hit = new Set(currentMeld.cards);
-      const hasMeld = currentMeld.cards.length > 0;
 
-      // 手牌 20 支渲染
       el.handGrid.innerHTML = "";
       currentHand.forEach((card, i) => {
-        const isHit = hit.has(i);
-        const extra = isHit ? "tile--hit" : (hasMeld ? "tile--dim" : "");
+        const extra = hit.has(i) ? "tile--hit" : "tile--dim";
         const tile = makeTile(card, extra);
         el.handGrid.appendChild(tile);
       });
 
-      el.handLabel.innerHTML = hasMeld
-        ? "手牌二十支・中獎成副：<em>【" + cfg.name + "】</em>"
-        : "手牌二十支・<em>無成副（全散牌）</em>";
+      // 1. 手牌區標題
+      el.handLabel.innerHTML = `手牌二十支・開出同盟組合：<em>【${currentFortune.meld_name}】</em>`;
 
-      // 籤牌資料綁定
-      el.tag.style.setProperty("--accent", accentOf(currentMeld, currentHand));
-      el.tagMeld.textContent = cfg.name + (cfg.fu > 0 ? "・" + toChinese(cfg.fu) + "福" : "・無福");
-      el.tagGrade.textContent = cfg.grade;
+      // 2. 籤牌色系
+      const isRedAlliance = currentFortune.cards[0].startsWith("red") || currentFortune.cards[0].startsWith("yellow");
+      el.tag.style.setProperty("--accent", isRedAlliance ? "var(--a-red)" : "var(--a-green)");
+      el.tagMeld.textContent = currentFortune.meld_name;
 
+      // 3. 籤牌等級
+      el.tagGrade.textContent = currentFortune.grade;
+
+      // 4. 文案展示
       el.tagKeyword.textContent = currentFortune.keyword;
       el.tagPun.textContent = currentFortune.pun;
       renderAdvice(currentFortune.advice);
@@ -1204,7 +1211,6 @@
       el.charm.classList.remove("charm--in");
       void el.charm.offsetWidth;
       el.charm.classList.add("charm--in");
-      el.btnAgain.focus({ preventScroll: true });
     }
 
     function drawFortune() {
@@ -1213,9 +1219,7 @@
       isDrawing = true;
       el.btnDraw.disabled = true;
 
-      currentHand = dealHand();
-      currentMeld = findMeld(currentHand);
-      currentFortune = fortunePool[Math.floor(Math.random() * fortunePool.length)];
+      currentHand = dealWeightedHand();
 
       if (reduceMotion) {
         setTimeout(finish, 150);
@@ -1241,20 +1245,18 @@
       clearFlyingTiles();
       el.btnDraw.disabled = false;
       isDrawing = false;
-      el.btnDraw.focus({ preventScroll: true });
+      updateDrawUI();
     }
 
     function shareText() {
-      if (!currentMeld || !currentFortune) return "";
-      const cfg = meldConfig[currentMeld.id];
-      const cards = currentMeld.cards.map(i => currentHand[i].label + currentHand[i].glyph).join(" ");
+      if (!currentFortune) return "";
       return [
-        "【四色諧音牌】",
-        "牌型：" + cfg.name + "（" + cfg.grade + (cfg.fu > 0 ? "・" + toChinese(cfg.fu) + "福" : "") + "）",
-        cards ? "成副：" + cards : "成副：無，二十張全是閒牌",
+        "【四色諧音牌・同盟好運籤】",
+        `牌型：${currentFortune.meld_name}（${currentFortune.grade}）`,
+        `成副：${currentFortune.keyword}`,
         "",
-        currentFortune.keyword,
         currentFortune.pun,
+        "",
         currentFortune.advice
       ].join("\n");
     }
@@ -1278,114 +1280,138 @@
       }
     }
 
-    const SHAKE_THRESHOLD = 22;
+    /* 搖晃感測器處理 */
+    const SHAKE_THRESHOLD = 20;
     let lastShakeAt = 0;
 
     function onDeviceMotion(e) {
-      const a = e.accelerationIncludingGravity;
+      const a = e.accelerationIncludingGravity || e.acceleration;
       if (!a) return;
-      const force = Math.sqrt((a.x || 0) ** 2 + (a.y || 0) ** 2 + (a.z || 0) ** 2);
-      const now = Date.now();
-      if (force > SHAKE_THRESHOLD && now - lastShakeAt > 2000) {
-        lastShakeAt = now;
-        if (!el.viewDraw.hidden) drawFortune();
+
+      const x = a.x || 0;
+      const y = a.y || 0;
+      const z = a.z || 0;
+      const force = Math.sqrt(x * x + y * y + z * z);
+
+      if (force > 0.5) {
+        if (!motionSupported) {
+          motionSupported = true;
+          motionActive = true;
+          updateDrawUI();
+        }
+
+        const now = Date.now();
+        if (force > SHAKE_THRESHOLD && now - lastShakeAt > 1800) {
+          lastShakeAt = now;
+          if (!el.viewDraw.hidden && !isDrawing) {
+            drawFortune();
+          }
+        }
       }
     }
 
-    function attachMotion() {
+    function activateMotionListener() {
       window.addEventListener("devicemotion", onDeviceMotion);
-      motionOn = true;
-      el.btnMotion.hidden = true;
-      el.hint.textContent = "感應已開啟，用力搖手機就會摸牌";
+      motionActive = true;
+      updateDrawUI();
     }
 
-    function enableMotion() {
-      if (motionOn) return;
+    function initMotion() {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (!isTouchDevice) {
+        fallbackToButton();
+        return;
+      }
+
       if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+        isIOSRequiringPermission = true;
+        el.shakeBadge.hidden = true;
+        el.btnDraw.hidden = false;
+        el.btnDraw.textContent = "點我啟用搖晃摸牌";
+        el.hint.textContent = "iOS 需點擊授權感測器";
+      } else if ("DeviceMotionEvent" in window) {
+        window.addEventListener("devicemotion", onDeviceMotion);
+        setTimeout(() => {
+          if (!motionSupported) fallbackToButton();
+        }, 800);
+      } else {
+        fallbackToButton();
+      }
+    }
+
+    function handleMainButtonClick() {
+      if (isIOSRequiringPermission) {
         DeviceMotionEvent.requestPermission()
           .then(state => {
-            if (state === "granted") attachMotion();
-            else el.hint.textContent = "沒拿到感測權限，按按鈕摸一樣準";
+            if (state === "granted") {
+              isIOSRequiringPermission = false;
+              activateMotionListener();
+              showToast("搖晃感應已開啟！");
+            } else {
+              isIOSRequiringPermission = false;
+              fallbackToButton("未開啟感應權限，改用按鈕摸牌");
+            }
           })
-          .catch(() => { el.hint.textContent = "這台裝置不支援搖晃感應，按按鈕就好"; });
-      } else if ("DeviceMotionEvent" in window) {
-        attachMotion();
+          .catch(() => {
+            isIOSRequiringPermission = false;
+            fallbackToButton("裝置不支援感應，改用按鈕摸牌");
+          });
       } else {
-        el.btnMotion.hidden = true;
-        el.hint.textContent = "這台裝置沒有搖晃感應，按按鈕就好";
+        drawFortune();
+      }
+    }
+
+    function fallbackToButton(msg) {
+      motionActive = false;
+      el.shakeBadge.hidden = true;
+      el.btnDraw.hidden = false;
+      el.btnDraw.textContent = "按我摸牌";
+      el.hint.textContent = msg || "";
+    }
+
+    function updateDrawUI() {
+      if (motionActive) {
+        el.shakeBadge.hidden = false;
+        el.btnDraw.hidden = true;
+        el.hint.textContent = "";
+      } else {
+        el.shakeBadge.hidden = true;
+        el.btnDraw.hidden = false;
       }
     }
 
     function isValidFortune(item) {
       return !!item && typeof item === "object" &&
-        ["keyword", "pun", "advice"].every(k => typeof item[k] === "string" && item[k].trim() !== "");
-    }
-
-    function isValidMeld(item) {
-      return !!item && typeof item === "object" &&
-        ["id", "name", "grade", "note"].every(k => typeof item[k] === "string" && item[k].trim() !== "") &&
-        typeof item.fu === "number";
-    }
-
-    function setLoading() {
-      el.btnDraw.disabled = true;
-      el.btnMotion.hidden = true;
-      el.hint.classList.remove("hint--error");
-      el.hint.textContent = "";
-    }
-
-    function setReady(skipped) {
-      el.btnDraw.disabled = false;
-      el.hint.classList.remove("hint--error");
-      el.hint.textContent = "";
-      if (skipped > 0) console.warn("[四色諧音牌] 有 " + skipped + " 筆籤詩欄位不完整，已略過。");
-      if ("DeviceMotionEvent" in window && window.matchMedia("(pointer:coarse)").matches) {
-        el.btnMotion.hidden = false;
-      }
-    }
-
-    function setError(err) {
-      el.btnDraw.disabled = true;
-      el.btnMotion.hidden = true;
-      el.hint.classList.add("hint--error");
-      el.hint.textContent = location.protocol === "file:"
-        ? "讀不到 " + FORTUNES_URL + "。\n直接雙擊開啟網頁時，瀏覽器會擋住讀取本機檔案。\n請改用本機伺服器開啟，例如：\npython3 -m http.server 8000"
-        : "讀不到或無法解析 " + FORTUNES_URL + "。\n請確認檔案和 index.html 放在同一層，且 JSON 格式正確。\n（" + err.message + "）";
+        ["keyword", "pun", "advice", "grade", "meld_name"].every(k => typeof item[k] === "string" && item[k].trim() !== "") &&
+        typeof item.id === "number" &&
+        Array.isArray(item.cards) && item.cards.length === 2;
     }
 
     async function loadData() {
-      setLoading();
       try {
         const res = await fetch(FORTUNES_URL, { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
 
-        if (!data || !Array.isArray(data.melds) || !Array.isArray(data.fortunes)) {
-          throw new Error("JSON 必須包含 melds 與 fortunes 兩個陣列");
+        if (!data || !Array.isArray(data.fortunes)) {
+          throw new Error("JSON 格式不符");
         }
 
-        const cfg = {};
-        data.melds.filter(isValidMeld).forEach(m => { cfg[m.id] = m; });
-        const missing = REQUIRED_MELDS.filter(id => !cfg[id]);
-        if (missing.length) throw new Error("melds 缺少牌型：" + missing.join("、"));
-
         const clean = data.fortunes.filter(isValidFortune);
-        if (clean.length === 0) throw new Error("沒有任何一筆欄位完整的諧音梗");
+        if (clean.length === 0) throw new Error("無完整籤詩");
 
-        meldConfig = cfg;
         fortunePool = clean;
-        setReady(data.fortunes.length - clean.length);
+        initMotion();
       } catch (err) {
-        meldConfig = {};
-        fortunePool = [];
-        setError(err);
+        el.hint.classList.add("hint--error");
+        el.hint.textContent = "籤詩載入失敗，請確認網路或連線。";
+        fallbackToButton();
       }
     }
 
-    el.btnDraw.addEventListener("click", drawFortune);
-    el.btnAgain.addEventListener("click", () => { resetToDraw(); drawFortune(); });
+    el.btnAgain.addEventListener("click", resetToDraw);
+    el.btnDraw.addEventListener("click", handleMainButtonClick);
     el.btnCopy.addEventListener("click", copyResult);
-    el.btnMotion.addEventListener("click", enableMotion);
 
     loadData();
 
