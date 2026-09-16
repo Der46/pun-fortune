@@ -31,7 +31,7 @@
       --gold: #A8823E;
       --gold-light: #DFC384;
 
-      /* 四色牌鮮豔花色 */
+      /* 四色牌色 */
       --tile-red-a: #FF3B30;
       --tile-red-b: #D70015;
       --tile-red-ink: #1E1206;
@@ -151,7 +151,7 @@
       line-height: 1;
     }
 
-    /* 四色牌面：直角（border-radius: 0） */
+    /* 四色牌面：直角*/
     .tile {
       position: relative;
       display: flex;
@@ -196,7 +196,7 @@
       border: 1px solid rgba(120, 110, 88, .45);
     }
 
-    /* 抽牌舞台：留出微寬鬆適度距離（margin-top: 52px） */
+    /* 抽牌舞台*/
     .table-stage {
       flex: 1 1 auto;
       min-height: 0;
@@ -810,17 +810,12 @@
       transform: translate(-50%, 0);
     }
 
-    /* 截圖專用優化：強制拔除所有旋轉與動畫，完全擺正 */
-    .is-exporting {
-      background: radial-gradient(125% 90% at 50% 6%, #2E5941 0%, #234536 46%, #142A1D 100%) !important;
-      padding: 24px 16px !important;
-      border-radius: 12px;
-    }
-
-    .is-exporting .charm {
+    .charm.is-exporting {
       animation: none !important;
       transform: none !important;
-      /* 強制水平垂直完全回正 */
+      background: radial-gradient(125% 90% at 50% 6%, #2E5941 0%, #234536 46%, #142A1D 100%) !important;
+      padding: 24px 18px 20px !important;
+      border-radius: 16px !important;
     }
 
     .is-exporting .tag {
@@ -831,11 +826,6 @@
     .is-exporting .tag__pun,
     .is-exporting .advice__value {
       color: #221A15 !important;
-    }
-
-    .is-exporting .tile--hit {
-      animation: none !important;
-      box-shadow: 0 0 0 2px #FFE58F, 0 4px 10px rgba(0, 0, 0, 0.75) !important;
     }
   </style>
 </head>
@@ -879,49 +869,47 @@
 
     <!-- 畫面二：開牌結果 -->
     <section class="view" id="viewResult" hidden>
-      <div id="captureArea" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-        <p class="result-head">四色諧音牌・同盟好運</p>
+      <p class="result-head">四色諧音牌・同盟好運</p>
 
-        <div class="result-scroll">
-          <!-- 手牌區：二十支牌 -->
-          <section class="hand">
-            <h2 class="hand__label" id="handLabel"></h2>
-            <div class="hand__grid" id="handGrid"></div>
-          </section>
+      <div class="result-scroll">
+        <!-- 手牌區：二十支牌 -->
+        <section class="hand">
+          <h2 class="hand__label" id="handLabel"></h2>
+          <div class="hand__grid" id="handGrid"></div>
+        </section>
 
-          <!-- 籤牌吊飾區 -->
-          <div class="charm" id="charm">
-            <svg class="charm__cord" viewBox="0 0 120 86" aria-hidden="true">
-              <defs>
-                <linearGradient id="cord" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0" stop-color="#8E211A" />
-                  <stop offset=".4" stop-color="#D4564A" />
-                  <stop offset="1" stop-color="#8E211A" />
-                </linearGradient>
-              </defs>
-              <path d="M60,79 C31,60 29,21 60,7 C91,21 89,60 60,79 Z" fill="none" stroke="url(#cord)" stroke-width="5"
-                stroke-linecap="round" />
-              <rect x="50" y="68" width="20" height="13" rx="6" fill="#A5271F" />
-              <rect x="50" y="68" width="20" height="5" rx="2.5" fill="rgba(255,255,255,.22)" />
-            </svg>
+        <!-- 籤牌吊飾區（純截圖範圍） -->
+        <div class="charm" id="charm">
+          <svg class="charm__cord" viewBox="0 0 120 86" aria-hidden="true">
+            <defs>
+              <linearGradient id="cord" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#8E211A" />
+                <stop offset=".4" stop-color="#D4564A" />
+                <stop offset="1" stop-color="#8E211A" />
+              </linearGradient>
+            </defs>
+            <path d="M60,79 C31,60 29,21 60,7 C91,21 89,60 60,79 Z" fill="none" stroke="url(#cord)" stroke-width="5"
+              stroke-linecap="round" />
+            <rect x="50" y="68" width="20" height="13" rx="6" fill="#A5271F" />
+            <rect x="50" y="68" width="20" height="5" rx="2.5" fill="rgba(255,255,255,.22)" />
+          </svg>
 
-            <article class="tag" id="tag">
-              <span class="tag__band tag__band--top" aria-hidden="true"></span>
-              <span class="tag__eyelet" aria-hidden="true"></span>
+          <article class="tag" id="tag">
+            <span class="tag__band tag__band--top" aria-hidden="true"></span>
+            <span class="tag__eyelet" aria-hidden="true"></span>
 
-              <div class="tag__meta">
-                <span class="tag__meld" id="tagMeld"></span>
-                <span class="tag__grade" id="tagGrade"></span>
-              </div>
+            <div class="tag__meta">
+              <span class="tag__meld" id="tagMeld"></span>
+              <span class="tag__grade" id="tagGrade"></span>
+            </div>
 
-              <h2 class="tag__keyword" id="tagKeyword"></h2>
-              <div class="tag__rule" aria-hidden="true"></div>
-              <p class="tag__pun" id="tagPun"></p>
+            <h2 class="tag__keyword" id="tagKeyword"></h2>
+            <div class="tag__rule" aria-hidden="true"></div>
+            <p class="tag__pun" id="tagPun"></p>
 
-              <div class="tag__advice" id="tagAdvice"></div>
-              <span class="tag__band tag__band--bottom" aria-hidden="true"></span>
-            </article>
-          </div>
+            <div class="tag__advice" id="tagAdvice"></div>
+            <span class="tag__band tag__band--bottom" aria-hidden="true"></span>
+          </article>
         </div>
       </div>
 
@@ -1000,8 +988,7 @@
       tagKeyword: document.getElementById("tagKeyword"),
       tagPun: document.getElementById("tagPun"),
       tagAdvice: document.getElementById("tagAdvice"),
-      toast: document.getElementById("toast"),
-      captureArea: document.getElementById("captureArea")
+      toast: document.getElementById("toast")
     };
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1274,7 +1261,7 @@
       updateDrawUI();
     }
 
-    /* 截圖與分享：等待晃動完畢，並強制回正畫面 */
+    /* 截圖與分享：只截取籤牌本身（#charm） */
     async function shareResultImage() {
       if (!currentFortune) return;
 
@@ -1287,21 +1274,21 @@
       el.btnShareImage.disabled = true;
       showToast("正在生成圖片...");
 
-      // 套用回正與純實色優化
-      el.captureArea.classList.add("is-exporting");
+      // 僅對籤牌本身套用回正與專屬背景
+      el.charm.classList.add("is-exporting");
 
       // 等待 DOM 繪製穩定
       await new Promise(r => setTimeout(r, 60));
 
       try {
-        const canvas = await html2canvas(el.captureArea, {
+        const canvas = await html2canvas(el.charm, {
           backgroundColor: "#183223",
           scale: 2.5,
           useCORS: true,
           logging: false
         });
 
-        el.captureArea.classList.remove("is-exporting");
+        el.charm.classList.remove("is-exporting");
 
         canvas.toBlob(async (blob) => {
           if (!blob) {
@@ -1332,7 +1319,7 @@
         }, "image/png");
       } catch (err) {
         console.error(err);
-        el.captureArea.classList.remove("is-exporting");
+        el.charm.classList.remove("is-exporting");
         showToast("截圖失敗，建議直接螢幕截圖");
         el.btnShareImage.disabled = false;
       }
