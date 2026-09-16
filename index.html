@@ -14,6 +14,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700;900&display=swap"
     rel="stylesheet">
+  <!-- 引入截圖函式庫供圖片分享使用 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
     :root {
@@ -23,7 +25,7 @@
       --cream-soft: #C9C0AA;
 
       --ink: #221C19;
-      --ink-soft: #5E5149;
+      --ink-soft: #4A3E37;
       --red: #C0342A;
       --red-deep: #8C1F18;
       --gold: #A8823E;
@@ -148,7 +150,7 @@
       line-height: 1;
     }
 
-    /* 四色牌面 */
+    /* 四色牌面：直角（border-radius: 0） */
     .tile {
       position: relative;
       display: flex;
@@ -156,7 +158,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 9% 0;
-      border-radius: 999px;
+      border-radius: 0;
       font-family: "Noto Serif TC", serif;
       font-weight: 900;
       line-height: .9;
@@ -193,13 +195,16 @@
       border: 1px solid rgba(120, 110, 88, .45);
     }
 
+    /* 抽牌舞台：留出微寬鬆適度距離（margin-top: 52px） */
     .table-stage {
       flex: 1 1 auto;
       min-height: 0;
       width: 100%;
       position: relative;
-      display: grid;
-      place-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      margin-top: clamp(38px, 6.8vh, 60px);
       overflow: hidden;
     }
 
@@ -219,7 +224,7 @@
       height: 125px;
       margin-left: -28px;
       transform-origin: 50% 138%;
-      border-radius: 999px;
+      border-radius: 0;
       border: 1px solid rgba(0, 0, 0, 0.18);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
     }
@@ -297,7 +302,7 @@
     .fly-layer {
       position: absolute;
       left: 50%;
-      top: 52%;
+      top: 105px;
       width: 0;
       height: 0;
       z-index: 5;
@@ -347,6 +352,7 @@
       gap: 12px;
       min-height: 84px;
       justify-content: center;
+      margin-bottom: clamp(12px, 3vh, 28px);
     }
 
     .btn {
@@ -458,7 +464,7 @@
       color: #FFB4A6;
     }
 
-    /* 開牌結果 */
+    /* 開牌結果畫面 */
     #viewResult {
       height: 100dvh;
       max-height: 100dvh;
@@ -503,7 +509,6 @@
       font-weight: 700;
     }
 
-    /* 手牌網格：上下留足 12px 距離避免吃字 */
     .hand__grid {
       display: grid;
       grid-template-columns: repeat(10, 1fr);
@@ -519,6 +524,7 @@
       aspect-ratio: 22/42;
       font-size: 12px;
       padding: 5% 0;
+      border-radius: 0;
       transition: transform .25s ease, opacity .25s ease, filter .25s ease;
     }
 
@@ -555,7 +561,7 @@
       transform: scale(.95) !important;
     }
 
-    /* 籤牌吊飾 */
+    /* 籤牌吊飾區 */
     .charm {
       position: relative;
       flex: 0 1 auto;
@@ -565,6 +571,7 @@
       margin: 0 auto;
       padding-top: 24px;
       transform-origin: 50% 6px;
+      transform: rotate(0deg);
     }
 
     .charm__cord {
@@ -583,11 +590,12 @@
       position: relative;
       padding: 22px 18px 12px;
       border-radius: 18px;
-      border: 1px solid var(--accent);
-      color: var(--ink);
-      background:
-        repeating-linear-gradient(96deg, rgba(158, 118, 58, .05) 0 2px, transparent 2px 9px),
-        linear-gradient(180deg, #FCF5E6 0%, #F3E7CF 56%, #EADCBE 100%);
+      border: 1.5px solid var(--accent);
+      color: #1A1412;
+      background-color: #F8F1DF;
+      background-image:
+        repeating-linear-gradient(96deg, rgba(158, 118, 58, .04) 0 2px, transparent 2px 9px),
+        linear-gradient(180deg, #FAF4E8 0%, #F3E7CE 100%);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, .95),
         inset 0 -3px 8px rgba(120, 86, 40, .12),
@@ -599,7 +607,7 @@
       position: absolute;
       inset: 6px;
       border: 1px solid var(--accent);
-      opacity: .4;
+      opacity: .45;
       border-radius: 13px;
       pointer-events: none;
     }
@@ -645,7 +653,7 @@
 
     .tag__meld {
       font-family: "Noto Serif TC", serif;
-      font-size: 13px;
+      font-size: 13.5px;
       letter-spacing: .1em;
       color: var(--accent);
       font-weight: 700;
@@ -653,10 +661,10 @@
 
     .tag__grade {
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 700;
       letter-spacing: .1em;
       text-indent: .1em;
-      color: #FBEFD8;
+      color: #FCF4E2;
       padding: 3px 12px;
       border-radius: 999px;
       border: 1px solid var(--gold-light);
@@ -673,7 +681,7 @@
       line-height: 1.15;
       letter-spacing: .12em;
       text-indent: .12em;
-      color: var(--ink);
+      color: #1A1412;
     }
 
     .tag__rule {
@@ -682,14 +690,15 @@
       margin: 6px auto 7px;
       border-top: 2px solid var(--accent);
       border-bottom: 1px solid var(--accent);
-      opacity: .75;
+      opacity: .8;
     }
 
     .tag__pun {
       margin: 0;
       font-size: 12.5px;
       line-height: 1.55;
-      color: var(--ink-soft);
+      color: #382C24;
+      font-weight: 500;
       text-align: justify;
       text-justify: inter-ideograph;
     }
@@ -697,7 +706,7 @@
     .tag__advice {
       margin-top: 8px;
       padding-top: 7px;
-      border-top: 1px solid rgba(168, 130, 62, .3);
+      border-top: 1px solid rgba(168, 130, 62, .35);
       display: grid;
       grid-template-columns: 1fr 1fr;
     }
@@ -708,7 +717,7 @@
     }
 
     .advice__cell+.advice__cell {
-      border-left: 1px solid rgba(168, 130, 62, .3);
+      border-left: 1px solid rgba(168, 130, 62, .35);
     }
 
     .advice__label {
@@ -724,12 +733,13 @@
     }
 
     .advice__cell--avoid .advice__label {
-      color: var(--ink);
+      color: #1A1412;
     }
 
     .advice__value {
       font-size: 11.5px;
-      color: var(--ink-soft);
+      color: #382C24;
+      font-weight: 500;
       line-height: 1.35;
     }
 
@@ -754,7 +764,7 @@
     }
 
     .charm--in {
-      animation: charm-drop 1.1s cubic-bezier(.26, .8, .32, 1) both;
+      animation: charm-drop 1.1s cubic-bezier(.26, .8, .32, 1) forwards;
     }
 
     .result-head {
@@ -798,6 +808,34 @@
       opacity: 1;
       transform: translate(-50%, 0);
     }
+
+    /* 截圖專用優化：強制拔除所有旋轉與動畫，完全擺正 */
+    .is-exporting {
+      background: radial-gradient(125% 90% at 50% 6%, #2E5941 0%, #234536 46%, #142A1D 100%) !important;
+      padding: 24px 16px !important;
+      border-radius: 12px;
+    }
+
+    .is-exporting .charm {
+      animation: none !important;
+      transform: none !important;
+      /* 強制水平垂直完全回正 */
+    }
+
+    .is-exporting .tag {
+      background: #F8F1DF !important;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .is-exporting .tag__pun,
+    .is-exporting .advice__value {
+      color: #221A15 !important;
+    }
+
+    .is-exporting .tile--hit {
+      animation: none !important;
+      box-shadow: 0 0 0 2px #FFE58F, 0 4px 10px rgba(0, 0, 0, 0.75) !important;
+    }
   </style>
 </head>
 
@@ -809,7 +847,7 @@
       <header class="masthead">
         <span class="seal" aria-hidden="true">諧</span>
         <h1 class="masthead__title">四色諧音牌</h1>
-        <p class="masthead__sub">紅黃為朋・綠白為友｜搖一搖摸一副好籤</p>
+        <p class="masthead__sub">來嘍來嘍～搖一搖、湊一湊，看看今天是好運還是好笑！</p>
       </header>
 
       <div class="table-stage" id="tableStage">
@@ -840,53 +878,55 @@
 
     <!-- 畫面二：開牌結果 -->
     <section class="view" id="viewResult" hidden>
-      <p class="result-head">四色諧音牌・同盟好運</p>
+      <div id="captureArea" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+        <p class="result-head">四色諧音牌・同盟好運</p>
 
-      <div class="result-scroll">
-        <!-- 手牌區：二十支牌 -->
-        <section class="hand">
-          <h2 class="hand__label" id="handLabel"></h2>
-          <div class="hand__grid" id="handGrid"></div>
-        </section>
+        <div class="result-scroll">
+          <!-- 手牌區：二十支牌 -->
+          <section class="hand">
+            <h2 class="hand__label" id="handLabel"></h2>
+            <div class="hand__grid" id="handGrid"></div>
+          </section>
 
-        <!-- 籤牌吊飾區 -->
-        <div class="charm" id="charm">
-          <svg class="charm__cord" viewBox="0 0 120 86" aria-hidden="true">
-            <defs>
-              <linearGradient id="cord" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#8E211A" />
-                <stop offset=".4" stop-color="#D4564A" />
-                <stop offset="1" stop-color="#8E211A" />
-              </linearGradient>
-            </defs>
-            <path d="M60,79 C31,60 29,21 60,7 C91,21 89,60 60,79 Z" fill="none" stroke="url(#cord)" stroke-width="5"
-              stroke-linecap="round" />
-            <rect x="50" y="68" width="20" height="13" rx="6" fill="#A5271F" />
-            <rect x="50" y="68" width="20" height="5" rx="2.5" fill="rgba(255,255,255,.22)" />
-          </svg>
+          <!-- 籤牌吊飾區 -->
+          <div class="charm" id="charm">
+            <svg class="charm__cord" viewBox="0 0 120 86" aria-hidden="true">
+              <defs>
+                <linearGradient id="cord" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#8E211A" />
+                  <stop offset=".4" stop-color="#D4564A" />
+                  <stop offset="1" stop-color="#8E211A" />
+                </linearGradient>
+              </defs>
+              <path d="M60,79 C31,60 29,21 60,7 C91,21 89,60 60,79 Z" fill="none" stroke="url(#cord)" stroke-width="5"
+                stroke-linecap="round" />
+              <rect x="50" y="68" width="20" height="13" rx="6" fill="#A5271F" />
+              <rect x="50" y="68" width="20" height="5" rx="2.5" fill="rgba(255,255,255,.22)" />
+            </svg>
 
-          <article class="tag" id="tag">
-            <span class="tag__band tag__band--top" aria-hidden="true"></span>
-            <span class="tag__eyelet" aria-hidden="true"></span>
+            <article class="tag" id="tag">
+              <span class="tag__band tag__band--top" aria-hidden="true"></span>
+              <span class="tag__eyelet" aria-hidden="true"></span>
 
-            <div class="tag__meta">
-              <span class="tag__meld" id="tagMeld"></span>
-              <span class="tag__grade" id="tagGrade"></span>
-            </div>
+              <div class="tag__meta">
+                <span class="tag__meld" id="tagMeld"></span>
+                <span class="tag__grade" id="tagGrade"></span>
+              </div>
 
-            <h2 class="tag__keyword" id="tagKeyword"></h2>
-            <div class="tag__rule" aria-hidden="true"></div>
-            <p class="tag__pun" id="tagPun"></p>
+              <h2 class="tag__keyword" id="tagKeyword"></h2>
+              <div class="tag__rule" aria-hidden="true"></div>
+              <p class="tag__pun" id="tagPun"></p>
 
-            <div class="tag__advice" id="tagAdvice"></div>
-            <span class="tag__band tag__band--bottom" aria-hidden="true"></span>
-          </article>
+              <div class="tag__advice" id="tagAdvice"></div>
+              <span class="tag__band tag__band--bottom" aria-hidden="true"></span>
+            </article>
+          </div>
         </div>
       </div>
 
       <div class="result-actions">
         <button class="btn btn--again" id="btnAgain" type="button">再摸一副</button>
-        <button class="btn btn--copy" id="btnCopy" type="button">複製結果分享</button>
+        <button class="btn btn--copy" id="btnShareImage" type="button">分享結果圖片</button>
       </div>
     </section>
 
@@ -917,18 +957,16 @@
     const COPIES = 2;
     const HAND_SIZE = 20;
 
-    /* ★★★ 等級稀有度階梯權重（加總 100%） ★★★ */
     const GRADE_WEIGHTS = [
-      { grade: "上上籤", weight: 4 },  // 4%  頂格大籤
-      { grade: "特上籤", weight: 8 },  // 8%  爆發機運籤
-      { grade: "大吉籤", weight: 14 }, // 14% 熱門吉祥籤
-      { grade: "中吉籤", weight: 20 }, // 20% 平穩前進籤
-      { grade: "小吉籤", weight: 22 }, // 22% 扎實穩健籤
-      { grade: "平安籤", weight: 20 }, // 20% 歲月靜好籤
-      { grade: "末吉籤", weight: 12 }  // 12% 幽默轉運籤
+      { grade: "上上籤", weight: 4 },
+      { grade: "特上籤", weight: 8 },
+      { grade: "大吉籤", weight: 14 },
+      { grade: "中吉籤", weight: 20 },
+      { grade: "小吉籤", weight: 22 },
+      { grade: "平安籤", weight: 20 },
+      { grade: "末吉籤", weight: 12 }
     ];
 
-    /* ★★★ 保底與冷卻記憶體設定 ★★★ */
     const COOLDOWN_LIMIT = 5;
     const STORAGE_KEY_RECENT = "four_color_fortune_recent_ids";
     const STORAGE_KEY_SEEN = "four_color_fortune_seen_ids";
@@ -938,7 +976,6 @@
     let currentMeld = null;
     let currentFortune = null;
 
-    // 讀取本地快取的最近 5 次歷史紀錄與已抽過記錄
     let recentHistory = loadStorageList(STORAGE_KEY_RECENT);
     let seenHistory = new Set(loadStorageList(STORAGE_KEY_SEEN));
 
@@ -951,7 +988,7 @@
       shakeBadge: document.getElementById("shakeBadge"),
       btnDraw: document.getElementById("btnDraw"),
       btnAgain: document.getElementById("btnAgain"),
-      btnCopy: document.getElementById("btnCopy"),
+      btnShareImage: document.getElementById("btnShareImage"),
       hint: document.getElementById("hint"),
       handLabel: document.getElementById("handLabel"),
       handGrid: document.getElementById("handGrid"),
@@ -962,7 +999,8 @@
       tagKeyword: document.getElementById("tagKeyword"),
       tagPun: document.getElementById("tagPun"),
       tagAdvice: document.getElementById("tagAdvice"),
-      toast: document.getElementById("toast")
+      toast: document.getElementById("toast"),
+      captureArea: document.getElementById("captureArea")
     };
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -970,6 +1008,7 @@
     let motionSupported = false;
     let motionActive = false;
     let isIOSRequiringPermission = false;
+    let isCharmAnimationDone = false;
 
     function loadStorageList(key) {
       try {
@@ -1020,15 +1059,12 @@
       return arr;
     }
 
-    /* ★★★ 核心演算法：5次防重複 + 全池均勻涵蓋保底 ★★★ */
     function pickTargetFortuneWithGuarantees() {
-      // 1. 若全池 56 支籤都已經被看過一遍，重置已見紀錄，開啟新一輪循環
       if (seenHistory.size >= fortunePool.length) {
         seenHistory.clear();
         saveStorageList(STORAGE_KEY_SEEN, []);
       }
 
-      // 2. 依照等級權重決定目標等級
       const rnd = Math.random() * 100;
       let acc = 0;
       let targetGrade = "小吉籤";
@@ -1041,49 +1077,39 @@
         }
       }
 
-      // 3. 排除最近 5 次抽過的籤（嚴格防重複）
       const cooldownSet = new Set(recentHistory);
       let candidates = fortunePool.filter(f => !cooldownSet.has(f.id));
 
-      // 若過濾後全域池不足，強制縮減冷卻長度回退
       if (candidates.length === 0) {
         candidates = [...fortunePool];
       }
 
-      // 4. 優先從符合「目標等級」的未冷卻候選籤中挑選
       let gradeMatches = candidates.filter(f => f.grade === targetGrade);
-
-      // 如果該等級內的所有籤剛好都在 5 次冷卻內，則退回該等級全部籤（允許極端冷卻放行）或使用相近候選
       let chosenFortune = null;
       if (gradeMatches.length > 0) {
-        // 在符合等級的籤中，優先挑選「還沒看過（未被收集過）」的籤
         const unseenMatches = gradeMatches.filter(f => !seenHistory.has(f.id));
         chosenFortune = unseenMatches.length > 0
           ? unseenMatches[Math.floor(Math.random() * unseenMatches.length)]
           : gradeMatches[Math.floor(Math.random() * gradeMatches.length)];
       } else {
-        // 該等級暫時不可用，從候選池中挑選
         const unseenCandidates = candidates.filter(f => !seenHistory.has(f.id));
         chosenFortune = unseenCandidates.length > 0
           ? unseenCandidates[Math.floor(Math.random() * unseenCandidates.length)]
           : candidates[Math.floor(Math.random() * candidates.length)];
       }
 
-      // 5. 更新冷卻隊列（FIFO，保持最多 5 次紀錄）
       recentHistory.push(chosenFortune.id);
       if (recentHistory.length > COOLDOWN_LIMIT) {
         recentHistory.shift();
       }
       saveStorageList(STORAGE_KEY_RECENT, recentHistory);
 
-      // 6. 更新已見集合
       seenHistory.add(chosenFortune.id);
       saveStorageList(STORAGE_KEY_SEEN, Array.from(seenHistory));
 
       return chosenFortune;
     }
 
-    /* 生成精準 20 張手牌演算法 */
     function dealWeightedHand() {
       const chosenFortune = pickTargetFortuneWithGuarantees();
       currentFortune = chosenFortune;
@@ -1091,7 +1117,6 @@
       let deck = buildDeck();
       let seed = [];
 
-      // 取出籤詩指定的 2 張種子牌
       for (const cardKey of chosenFortune.cards) {
         const [suit, piece] = cardKey.split("-");
         const idx = deck.findIndex(c => c.suit === suit && c.piece === piece);
@@ -1104,7 +1129,6 @@
         return shuffle(buildDeck()).slice(0, HAND_SIZE);
       }
 
-      // 隨機填入其餘 18 張牌
       const remainDeck = shuffle([...deck]);
       const hand = [...seed];
 
@@ -1112,7 +1136,6 @@
         hand.push(remainDeck.pop());
       }
 
-      // 隨機打亂手牌並標註種子牌位置
       const finalHand = shuffle(hand);
       const hitIndices = [];
       seed.forEach(s => {
@@ -1189,18 +1212,12 @@
         el.handGrid.appendChild(tile);
       });
 
-      // 1. 手牌區標題
       el.handLabel.innerHTML = `手牌二十支・開出同盟組合：<em>【${currentFortune.meld_name}】</em>`;
 
-      // 2. 籤牌色系
       const isRedAlliance = currentFortune.cards[0].startsWith("red") || currentFortune.cards[0].startsWith("yellow");
       el.tag.style.setProperty("--accent", isRedAlliance ? "var(--a-red)" : "var(--a-green)");
       el.tagMeld.textContent = currentFortune.meld_name;
-
-      // 3. 籤牌等級
       el.tagGrade.textContent = currentFortune.grade;
-
-      // 4. 文案展示
       el.tagKeyword.textContent = currentFortune.keyword;
       el.tagPun.textContent = currentFortune.pun;
       renderAdvice(currentFortune.advice);
@@ -1208,9 +1225,17 @@
       el.viewDraw.hidden = true;
       el.viewResult.hidden = false;
 
+      // 吊飾落下動畫，動畫期間暫時鎖定分享按鈕以確保不截到晃動畫面
+      isCharmAnimationDone = false;
+      el.btnShareImage.disabled = true;
       el.charm.classList.remove("charm--in");
       void el.charm.offsetWidth;
       el.charm.classList.add("charm--in");
+
+      setTimeout(() => {
+        isCharmAnimationDone = true;
+        el.btnShareImage.disabled = false;
+      }, 1150);
     }
 
     function drawFortune() {
@@ -1248,39 +1273,83 @@
       updateDrawUI();
     }
 
-    function shareText() {
-      if (!currentFortune) return "";
-      return [
-        "【四色諧音牌・同盟好運籤】",
-        `牌型：${currentFortune.meld_name}（${currentFortune.grade}）`,
-        `成副：${currentFortune.keyword}`,
-        "",
-        currentFortune.pun,
-        "",
-        currentFortune.advice
-      ].join("\n");
-    }
+    /* 截圖與分享：等待晃動完畢，並強制回正畫面 */
+    async function shareResultImage() {
+      if (!currentFortune) return;
 
-    async function copyResult() {
-      const text = shareText();
-      if (!text) return;
+      // 若吊飾仍在晃動中，等待其動畫結束
+      if (!isCharmAnimationDone) {
+        showToast("正在擺正籤牌，請稍候...");
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      el.btnShareImage.disabled = true;
+      showToast("正在生成圖片...");
+
+      // 套用回正與純實色優化
+      el.captureArea.classList.add("is-exporting");
+
+      // 等待 DOM 繪製穩定
+      await new Promise(r => setTimeout(r, 60));
+
       try {
-        await navigator.clipboard.writeText(text);
-        showToast("已複製，快去貼給朋友");
+        const canvas = await html2canvas(el.captureArea, {
+          backgroundColor: "#183223",
+          scale: 2.5,
+          useCORS: true,
+          logging: false
+        });
+
+        el.captureArea.classList.remove("is-exporting");
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showToast("圖片生成失敗，請手動截圖");
+            el.btnShareImage.disabled = false;
+            return;
+          }
+
+          const file = new File([blob], `fortune-${currentFortune.id}.png`, { type: "image/png" });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                title: "四色諧音牌・好運籤",
+                text: `我摸到了【${currentFortune.meld_name}】：${currentFortune.keyword}！`,
+                files: [file]
+              });
+              showToast("已成功分享！");
+            } catch (err) {
+              if (err.name !== "AbortError") {
+                downloadFallback(blob);
+              }
+            }
+          } else {
+            downloadFallback(blob);
+          }
+          el.btnShareImage.disabled = false;
+        }, "image/png");
       } catch (err) {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly", "");
-        ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;";
-        document.body.appendChild(ta);
-        ta.select();
-        const ok = document.execCommand && document.execCommand("copy");
-        document.body.removeChild(ta);
-        showToast(ok ? "已複製，快去貼給朋友" : "這個瀏覽器不給複製，先截圖吧");
+        console.error(err);
+        el.captureArea.classList.remove("is-exporting");
+        showToast("截圖失敗，建議直接螢幕截圖");
+        el.btnShareImage.disabled = false;
       }
     }
 
-    /* 搖晃感測器處理 */
+    function downloadFallback(blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `fortune-${currentFortune.id || "card"}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("籤牌圖片已下載保存");
+    }
+
+    /* 搖晃感應器處理 */
     const SHAKE_THRESHOLD = 20;
     let lastShakeAt = 0;
 
@@ -1411,7 +1480,7 @@
 
     el.btnAgain.addEventListener("click", resetToDraw);
     el.btnDraw.addEventListener("click", handleMainButtonClick);
-    el.btnCopy.addEventListener("click", copyResult);
+    el.btnShareImage.addEventListener("click", shareResultImage);
 
     loadData();
 
